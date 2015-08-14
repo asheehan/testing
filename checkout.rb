@@ -23,9 +23,7 @@ module MyTest
     end
 
     def do_checkout(browser)
-      Watir::Wait.until {
-        !browser.div(:class => 'loadinfo').present?
-      }
+      wait_for_load_window(browser)
       finish_button = browser.button(:id => 'submit-btn')
       browser.scroll.to(finish_button)
       finish_button.click
@@ -36,7 +34,16 @@ module MyTest
         browser.input(:id => 'p_method_checkmo').click
         browser.checkbox(:id => 'agreement-1').click
       else
-        # not yet implemented
+        cc = @config::USER[:cc]
+        browser.input(:id => 'p_method_braintree').click
+        wait_for_load_window(browser)
+
+        browser.select(:id => 'braintree_cc_type').select_value cc[:type]
+        browser.text_field(:id => 'braintree_cc_number').set cc[:number]
+        browser.text_field(:id => 'braintree_cc_cid').set cc[:cvv]
+        browser.select(:id => 'braintree_expiration').select_value cc[:expiration][:month]
+        browser.select(:id => 'braintree_expiration_yr').select_value cc[:expiration][:year]
+        browser.checkbox(:id => 'agreement-1').click
       end
 
       if browser.div(:id => 'invoice-alert').present?
@@ -65,7 +72,10 @@ module MyTest
     def select_timeslot(browser)
       browser.text_field(:data_id => 'event_calendar_date').click
       select_available_date(browser)
-      browser.span(:data_id => 'calendar_check_availability_btn').span(:class => 'hs-button').click
+      check_availablity = browser.span(:data_id => 'calendar_check_availability_btn')
+      browser.scroll.to(check_availablity)
+      check_availablity.span(:class => 'hs-button').click
+
       results_panel = browser.div(:css => '.calendar_availability_results-panel.currentPanel')
       results_panel.wait_until_present
       results_panel.span(:class => 'hs-button', :data_class => 'applyAvailableDate').click
@@ -89,6 +99,12 @@ module MyTest
       options.each do |option|
         option.radio.click
       end
+    end
+
+    def wait_for_load_window(browser)
+      Watir::Wait.until {
+        !browser.div(:class => 'loadinfo').present?
+      }
     end
   end
 end
