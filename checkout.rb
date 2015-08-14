@@ -18,7 +18,7 @@ module MyTest
       checkout_button.click
 
       billing_fill(b)
-      payment_fill(b, 'check')
+      payment_fill(b, 'credit')
       do_checkout(b)
     end
 
@@ -75,6 +75,13 @@ module MyTest
       check_availablity = browser.span(:data_id => 'calendar_check_availability_btn')
       browser.scroll.to(check_availablity)
       check_availablity.span(:class => 'hs-button').click
+
+      # make sure there are available times for this date
+      # results = browser.div(:id => calendar_availability_results)
+      # if results.present? && results.text.include('No Results Found') # this needs to be updated
+      #   select_next_available_date(browser) # need to implement this
+      # end
+      # p results = browser.div(:id => calendar_availability_results).text
 
       results_panel = browser.div(:css => '.calendar_availability_results-panel.currentPanel')
       results_panel.wait_until_present
