@@ -18,7 +18,7 @@ module MyTest
       checkout_button.click
 
       billing_fill(b)
-      payment_fill(b, 'credit')
+      payment_fill(b, 'check')
       do_checkout(b)
     end
 
@@ -73,19 +73,27 @@ module MyTest
       browser.text_field(:data_id => 'event_calendar_date').click
       select_available_date(browser)
       check_availablity = browser.span(:data_id => 'calendar_check_availability_btn')
-      browser.scroll.to(check_availablity)
-      check_availablity.span(:class => 'hs-button').click
+      # check if RTA is working here
+      if check_availablity.present?
+        browser.scroll.to(check_availablity)
+        check_availablity.span(:class => 'hs-button').click
 
-      # make sure there are available times for this date
-      # results = browser.div(:id => calendar_availability_results)
-      # if results.present? && results.text.include('No Results Found') # this needs to be updated
-      #   select_next_available_date(browser) # need to implement this
-      # end
-      # p results = browser.div(:id => calendar_availability_results).text
+        # make sure there are available times for this date
+        # results = browser.div(:id => calendar_availability_results)
+        # if results.present? && results.text.include('No Results Found') # this needs to be updated
+        #   select_next_available_date(browser) # need to implement this
+        # end
+        # p results = browser.div(:id => calendar_availability_results).text
 
-      results_panel = browser.div(:css => '.calendar_availability_results-panel.currentPanel')
-      results_panel.wait_until_present
-      results_panel.span(:class => 'hs-button', :data_class => 'applyAvailableDate').click
+        results_panel = browser.div(:css => '.calendar_availability_results-panel.currentPanel')
+        results_panel.wait_until_present
+        results_panel.span(:class => 'hs-button', :data_class => 'applyAvailableDate').click
+      elsif browser.span(:data_id => 'time_picker_wrapper').present?
+        browser.select(:data_id => 'event_calendar_hour').select_value 1
+        browser.select(:data_id => 'event_calendar_minute').select_value 0
+        browser.select(:data_id => 'event_calendar_day_part').select_value 'pm'
+      end
+
       select_options(browser)
     end
 
@@ -104,7 +112,19 @@ module MyTest
     def select_options(browser)
       options = browser.divs(:class => 'input-box')
       options.each do |option|
-        option.radio.click
+        if option.radio.present?
+          option.radio.click
+        end
+      end
+
+      # TODO not currently transferable to other events
+      [
+          browser.checkbox(:xpath => '//*[@id="options_21562_3740_3"]'),
+          browser.checkbox(:xpath => '//*[@id="options_21562_3740_2"]'),
+      ].each do |option|
+        if option.present?
+          option.set
+        end
       end
     end
 
