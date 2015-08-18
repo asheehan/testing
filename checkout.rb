@@ -73,7 +73,8 @@ module MyTest
       browser.text_field(:data_id => 'event_calendar_date').click
       select_available_date(browser)
       check_availablity = browser.span(:data_id => 'calendar_check_availability_btn')
-      # check if RTA is working here
+
+      # use RTA or handle failure
       if check_availablity.present?
         browser.scroll.to(check_availablity)
         check_availablity.span(:class => 'hs-button').click
