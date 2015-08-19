@@ -18,7 +18,7 @@ module MyTest
       checkout_button.click
 
       billing_fill(b)
-      payment_fill(b, 'check')
+      payment_fill(b, 'check') # this should be 'check' or 'credit'
       do_checkout(b)
     end
 
@@ -118,7 +118,7 @@ module MyTest
         end
       end
 
-      # TODO not currently transferable to other events
+      # TODO not currently transferable to other events (currently blues-jean-bar-dallas-retail event)
       [
           browser.checkbox(:xpath => '//*[@id="options_21562_3740_3"]'),
           browser.checkbox(:xpath => '//*[@id="options_21562_3740_2"]'),
