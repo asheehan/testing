@@ -1,16 +1,16 @@
 require 'watir-webdriver'
 require 'watir-scroll'
 require_relative 'dev_config'
+require_relative 'Optparse'
 
 module MyTest
   module Client
     extend self
-
     @config = MyTest::Config
 
-    def run
+    def run(options)
       b = Watir::Browser.new :chrome
-      b.goto "#{@config::SITE[:home]}#{@config::TEST[:event_url]}"
+      b.goto "#{@config::SITE[options.env.to_sym]}#{@config::TESTS[options.test.to_sym]}&#{options.debug}"
 
       select_timeslot(b)
       checkout_button = b.link(:data_id => 'checkout')
@@ -18,8 +18,10 @@ module MyTest
       checkout_button.click
 
       billing_fill(b)
-      payment_fill(b, 'check') # this should be 'check' or 'credit'
-      do_checkout(b)
+      payment_fill(b, 'credit') # this should be 'check' or 'credit'
+      if options.enable_final_checkout
+        do_checkout(b)
+      end
     end
 
     def do_checkout(browser)
@@ -120,8 +122,8 @@ module MyTest
 
       # TODO not currently transferable to other events (currently blues-jean-bar-dallas-retail event)
       [
-          browser.checkbox(:xpath => '//*[@id="options_21562_3740_3"]'),
-          browser.checkbox(:xpath => '//*[@id="options_21562_3740_2"]'),
+          browser.checkbox(:xpath => '//*[@id="options_21550_2"]'),
+          browser.checkbox(:xpath => '//*[@id="options_21550_3"]'),
       ].each do |option|
         if option.present?
           option.set
@@ -137,4 +139,5 @@ module MyTest
   end
 end
 
-MyTest::Client.run
+options = OptparseCheckout.parse(ARGV)
+MyTest::Client.run options
