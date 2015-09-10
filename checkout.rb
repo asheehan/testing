@@ -19,6 +19,7 @@ module MyTest
 
       billing_fill
       payment_fill options.type
+
       if options.enable_final_checkout
         do_checkout
       end
@@ -34,7 +35,6 @@ module MyTest
     def payment_fill(type='check')
       if type === 'check'
         @browser.input(id: 'p_method_checkmo').click
-        @browser.checkbox(id: 'agreement-1').click
       else
         cc = @config::USER[:cc]
         @browser.input(id: 'p_method_braintree').click
@@ -45,12 +45,14 @@ module MyTest
         @browser.text_field(id: 'braintree_cc_cid').set cc[:cvv]
         @browser.select(id: 'braintree_expiration').select_value cc[:expiration][:month]
         @browser.select(id: 'braintree_expiration_yr').select_value cc[:expiration][:year]
-        @browser.checkbox(id: 'agreement-1').click
       end
 
-      if @browser.div(id: 'invoice-alert').present?
-        @browser.div(id: 'invoice-alert').link(class: 'hs-button').click
-      end
+      @browser.div(id: 'simplemodal-container').div(data_id: 'close_modal').click
+      @browser.checkbox(id: 'agreement-1').click
+
+      # if @browser.div(id: 'invoice-alert').present?
+      #   @browser.div(id: 'invoice-alert').link(class: 'hs-button').click
+      # end
     end
 
     def billing_fill

@@ -11,7 +11,7 @@ class OptparseCheckout
     options.type = 'credit'
     options.email = @config::USER[:email]
     options.test = 'event'
-    options.debug = 'XDEBUG_SESSION_START=phpstorm'
+    options.debug = ''
     options.enable_final_checkout = true
 
     opt_parser = OptionParser.new do |opts|
@@ -32,8 +32,8 @@ class OptparseCheckout
       opts.on('-t', '--test TEST_ENVIRONMENT', 'Test to Run') do |t|
         options.test = t
       end
-      opts.on('-d', '--no-debug', 'Disable Debugging') do |d|
-        options.debug = ''
+      opts.on('-d', '--debug', 'Enable Debugging') do |d|
+        options.debug = 'XDEBUG_SESSION_START=phpstorm'
       end
       opts.on('-c', '--no-checkout', 'Disable Final Checkout') do |c|
         options.enable_final_checkout = false
