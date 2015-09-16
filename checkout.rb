@@ -7,9 +7,9 @@ module MyTest
   module Client
     extend self
     @config = MyTest::Config
-    @browser = Watir::Browser.new :chrome
 
     def run(options)
+      @browser = Watir::Browser.new :chrome
       @browser.goto "#{@config::SITE[options.env.to_sym]}#{@config::TESTS[options.test.to_sym]}&#{options.debug}"
 
       select_timeslot
@@ -49,10 +49,6 @@ module MyTest
 
       @browser.div(id: 'simplemodal-container').div(data_id: 'close_modal').click
       @browser.checkbox(id: 'agreement-1').click
-
-      # if @browser.div(id: 'invoice-alert').present?
-      #   @browser.div(id: 'invoice-alert').link(class: 'hs-button').click
-      # end
     end
 
     def billing_fill
@@ -83,7 +79,7 @@ module MyTest
         @browser.scroll.to(check_availablity)
         check_availablity.span(class: 'hs-button').click
 
-        # make sure there are available times for this date
+        # make sure there are available times for this date (I haven't been able to recreate this issue, however)
         # results = @browser.div(id: calendar_availability_results)
         # if results.present? && results.text.include('No Results Found') # this needs to be updated
         #   select_next_available_date(@browser) # need to implement this
@@ -123,6 +119,7 @@ module MyTest
       end
 
       # TODO not currently transferable to other events (currently blues-jean-bar-dallas-retail event)
+      # TODO should add an automation tag to this
       [
           @browser.checkbox(:xpath => '//*[@id="options_21550_2"]'),
           @browser.checkbox(:xpath => '//*[@id="options_21550_3"]'),
